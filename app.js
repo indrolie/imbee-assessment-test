@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const port = 3000;
+require('./rabbitmq-consumer');
 
 // Middleware
 app.use(express.json());
