@@ -6,7 +6,8 @@ require('./rabbitmq-consumer');
 
 // Enable CORS for all routes
 app.use(cors({
-	origin: true
+    credentials: true,
+    origin: true
 }));
 
 // Middleware
