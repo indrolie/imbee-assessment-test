@@ -10,10 +10,11 @@ admin.initializeApp({
 });
 
 const sendNotification = (deviceId, messageText) => {
-  	const message = {
+	const message = {
 		notification: {
 			title: 'Incoming message',
 			body: messageText,
+			image: '/imbee-logo.png'
 		},
 		token: deviceId,
 	};
