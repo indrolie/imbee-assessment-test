@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { saveTokenToDatabase, getAllTokens } = require('../sequelize');
 const { publishMessage } = require('../rabbitmq-consumer');
-
+const { v4: uuidv4 } = require('uuid');
 
 // Define a route
 router.get('/', (req, res) => {
@@ -24,13 +24,14 @@ router.post('/subscribe', async(req, res) => {
 router.post('/broadcast', async(req, res) => {
 	try {
 		const { message } = req.body;
+		const uniqueIdentifier = () => `fcm-msg-${uuidv4().substring(0, 10)}`;
 		const tokens = await getAllTokens();
 		console.log('All Firebase Tokens: ', JSON.stringify(tokens))
 
         await Promise.all(
             tokens.map(token => {
 				const messageContent = {
-					identifier: "fcm-msg-a1beff5ac1",
+					identifier: uniqueIdentifier(),
 					type: "device",
 					deviceId: token,
 					text: message
