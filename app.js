@@ -5,7 +5,9 @@ const port = 3000;
 require('./rabbitmq-consumer');
 
 // Enable CORS for all routes
-app.use(cors());
+app.use(cors({
+	origin: true
+}));
 
 // Middleware
 app.use(express.json());
