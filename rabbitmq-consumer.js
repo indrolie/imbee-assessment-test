@@ -1,5 +1,5 @@
 const { sendNotification } = require('./firebase-service');
-const { saveToDatabase } = require('./sequelize');
+const { saveMessageToDatabase } = require('./sequelize');
 const amqp = require('amqplib/callback_api');
 require('dotenv').config();
 
@@ -32,7 +32,7 @@ amqp.connect(RABBITMQ_URL, (err, conn) => {
                 channel.ack(msg);
 
                 await sendNotification(messageContent.deviceId, messageContent.text);
-                await saveToDatabase(messageContent.identifier, new Date().toISOString());
+                await saveMessageToDatabase(messageContent.identifier, new Date().toISOString());
 
                 const doneMessage = {
                     identifier: messageContent.identifier,

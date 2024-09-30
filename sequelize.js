@@ -18,7 +18,16 @@ const Job = sequelize.define('fcm_job', {
     timestamps: false
 });
 
-const saveToDatabase = async (identifier, deliverAt) => {
+const Token = sequelize.define('fcm_token', {
+    token: {
+        type: DataTypes.STRING,
+        primaryKey: true
+    }
+}, {
+    timestamps: false
+});
+
+const saveMessageToDatabase = async (identifier, deliverAt) => {
     try {
         await sequelize.sync();
         await Job.create({ identifier, deliverAt });
@@ -27,4 +36,13 @@ const saveToDatabase = async (identifier, deliverAt) => {
     }
 };
 
-module.exports = { sequelize, Job, saveToDatabase };
+const saveTokenToDatabase = async(token) => {
+    try {
+        await sequelize.sync();
+        await Token.create({ token });
+    } catch (error) {
+        console.error('Error saving to database:', error);
+    }
+}
+
+module.exports = { sequelize, Job, saveMessageToDatabase, saveTokenToDatabase };
