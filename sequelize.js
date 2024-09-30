@@ -30,7 +30,17 @@ const Token = sequelize.define('fcm_token', {
 const saveMessageToDatabase = async (identifier, deliverAt) => {
     try {
         await sequelize.sync();
-        await Job.create({ identifier, deliverAt });
+
+        const [newJob, created] = await Job.findOrCreate({
+            where: { identifier },
+            defaults: { deliverAt }
+        });
+
+        if (created) {
+            console.log('Message saved successfully:', newJob.identifier, newJob.deliverAt);
+        } else {
+            console.log('Message already exists for identifier:', newJob.identifier);
+        }
     } catch (error) {
         console.error('Error saving to database:', error);
     }
@@ -39,7 +49,17 @@ const saveMessageToDatabase = async (identifier, deliverAt) => {
 const saveTokenToDatabase = async(token) => {
     try {
         await sequelize.sync();
-        await Token.create({ token });
+
+        const [newToken, created] = await Token.findOrCreate({ // using findOrCreate to prevent duplicates
+            where: { token },  // Find by token
+            defaults: { token } // If not found, create a new entry
+        });
+
+        if (created) {
+            console.log('Token saved successfully:', newToken.token);
+        } else {
+            console.log('Token already exists:', newToken.token);
+        }
     } catch (error) {
         console.error('Error saving to database:', error);
     }
