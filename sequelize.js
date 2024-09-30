@@ -65,4 +65,14 @@ const saveTokenToDatabase = async(token) => {
     }
 }
 
-module.exports = { sequelize, Job, saveMessageToDatabase, saveTokenToDatabase };
+const getAllTokens = async() => {
+    try {
+        const tokens = await Token.findAll();
+        return tokens.map(token => token.token);
+    } catch (error) {
+        console.error('Error fetching tokens from database:', error);
+        throw error;
+    }
+}
+
+module.exports = { sequelize, Job, saveMessageToDatabase, saveTokenToDatabase, getAllTokens };

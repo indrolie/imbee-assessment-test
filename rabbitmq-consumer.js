@@ -4,6 +4,9 @@ const amqp = require('amqplib/callback_api');
 require('dotenv').config();
 
 const RABBITMQ_URL = process.env.RABBITMQ_URL || 'amqp://localhost';
+const queue = 'notification.fcm';
+const exchange = 'notification.done';
+let rabbitmq_channel;
 
 amqp.connect(RABBITMQ_URL, (err, conn) => {
     if (err) {
@@ -12,13 +15,12 @@ amqp.connect(RABBITMQ_URL, (err, conn) => {
     }
 
     conn.createChannel((err, channel) => {
+        rabbitmq_channel = channel;
+
         if (err) {
             console.error('Error creating channel:', err);
             return;
         }
-
-        const queue = 'notification.fcm';
-        const exchange = 'notification.done';
 
         channel.assertQueue(queue, { durable: true });
         channel.assertExchange(exchange, 'fanout', { durable: false });
@@ -46,3 +48,18 @@ amqp.connect(RABBITMQ_URL, (err, conn) => {
         });
     });
 });
+
+const publishMessage = (message) => {
+    if (!rabbitmq_channel) {
+        console.error('RabbitMQ channel is not initialized');
+        return;
+    }
+
+    rabbitmq_channel.assertQueue(queue, { durable: true });
+    rabbitmq_channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)), { persistent: true });
+    console.log(`Message sent to ${queue}:`, message);
+
+    return
+};
+
+module.exports = { publishMessage };
